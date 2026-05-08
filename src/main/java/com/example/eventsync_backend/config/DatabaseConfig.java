@@ -18,7 +18,7 @@ public class DatabaseConfig {
 
         dataSource.setUrl("jdbc:postgresql://localhost:5432/event_sync");
         dataSource.setUsername("postgres");
-        dataSource.setPassword("");// <== mdp postgres
+        dataSource.setPassword("jogomousa");// <== mdp postgres
 
         return dataSource;
     }

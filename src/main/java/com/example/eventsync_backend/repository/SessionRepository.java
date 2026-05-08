@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -83,8 +84,11 @@ public class SessionRepository {
             ps.setTimestamp(3, Timestamp.from(session.getStartTime()));
             ps.setTimestamp(4, Timestamp.from(session.getEndTime()));
             ps.setInt(5, session.getRoomId());
-            ps.setInt(6, session.getCapacity());
-            ps.setInt(7, session.getEventId());
+            if (session.getCapacity() == null) {
+                ps.setNull(6, Types.INTEGER);
+            } else {
+                ps.setInt(6, session.getCapacity());
+            }            ps.setInt(7, session.getEventId());
             return ps;
         }, keyHolder);
         Map<String, Object> keys = keyHolder.getKeys();
@@ -94,9 +98,22 @@ public class SessionRepository {
 
     private void update(Session session) {
         String sql = "UPDATE session SET title=?, description=?, start_time=?, end_time=?, room_id=?, capacity=?, event_id=? WHERE id=?";
-        jdbcTemplate.update(sql, session.getTitle(), session.getDescription(),
-                Timestamp.from(session.getStartTime()), Timestamp.from(session.getEndTime()),
-                session.getRoomId(), session.getCapacity(), session.getEventId(), session.getId());
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, session.getTitle());
+            ps.setString(2, session.getDescription());
+            ps.setTimestamp(3, Timestamp.from(session.getStartTime()));
+            ps.setTimestamp(4, Timestamp.from(session.getEndTime()));
+            ps.setInt(5, session.getRoomId());
+            if (session.getCapacity() == null) {
+                ps.setNull(6, Types.INTEGER);
+            } else {
+                ps.setInt(6, session.getCapacity());
+            }
+            ps.setInt(7, session.getEventId());
+            ps.setInt(8, session.getId());
+            return ps;
+        });
     }
 
     public void deleteById(Integer id) {

@@ -13,6 +13,7 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -63,7 +64,8 @@ public class QuestionRepository {
             ps.setTimestamp(5, Timestamp.from(question.getCreatedAt() != null ? question.getCreatedAt() : Instant.now()));
             return ps;
         }, keyHolder);
-        question.setId(keyHolder.getKey().intValue());
+        Map<String, Object> keys = keyHolder.getKeys();
+        question.setId((Integer) keys.get("id"));
         return question;
     }
 

@@ -15,9 +15,9 @@ public class DatabaseConfig {
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("org.postgresql.Driver");
-        dataSource.setUrl(System.getenv().getOrDefault("JDBC_URL", "jdbc:postgresql://localhost:5432/eventsync_db"));
+        dataSource.setUrl(System.getenv().getOrDefault("JDBC_URL", "jdbc:postgresql://localhost:5432/event_sync"));
         dataSource.setUsername(System.getenv().getOrDefault("DB_USER", "postgres"));
-        dataSource.setPassword(System.getenv().getOrDefault("DB_PASSWORD", "postgres"));
+        dataSource.setPassword(System.getenv().getOrDefault("DB_PASSWORD", ""));
         return dataSource;
     }
     @Bean

@@ -12,6 +12,7 @@ import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -62,7 +63,8 @@ public class EventRepository {
             ps.setString(5, event.getLocation());
             return ps;
         }, keyHolder);
-        event.setId(keyHolder.getKey().intValue());
+        Map<String, Object> keys = keyHolder.getKeys();
+        event.setId((Integer) keys.get("id"));
         return event;
     }
 
@@ -77,4 +79,5 @@ public class EventRepository {
         String sql = "DELETE FROM event WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
+
 }

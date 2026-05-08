@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -64,7 +65,8 @@ public class SpeakerRepository {
             ps.setString(4, speaker.getExternalLinks());
             return ps;
         }, keyHolder);
-        speaker.setId(keyHolder.getKey().intValue());
+        Map<String, Object> keys = keyHolder.getKeys();
+        speaker.setId((Integer) keys.get("id"));
         return speaker;
     }
 

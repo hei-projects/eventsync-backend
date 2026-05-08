@@ -12,6 +12,7 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -86,7 +87,8 @@ public class SessionRepository {
             ps.setInt(7, session.getEventId());
             return ps;
         }, keyHolder);
-        session.setId(keyHolder.getKey().intValue());
+        Map<String, Object> keys = keyHolder.getKeys();
+        session.setId((Integer) keys.get("id"));
         return session;
     }
 

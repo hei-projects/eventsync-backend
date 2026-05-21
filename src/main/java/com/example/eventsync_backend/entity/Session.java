@@ -1,23 +1,48 @@
 package com.example.eventsync_backend.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import java.time.Instant;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
+@Entity
+@Table(name = "sessions")
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Session {
-    private Integer id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String title;
+
+    @Column(length = 5000)
     private String description;
-    private Instant startTime;
-    private Instant endTime;
-    private Integer roomId;
+
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
     private Integer capacity;
-    private Integer eventId;
+
+    @ManyToOne
+    @JoinColumn(name = "event_id")
+    private Event event;
+
+    @ManyToOne
+    @JoinColumn(name = "room_id")
+    private Room room;
+
+    @ManyToMany
+    @JoinTable(
+            name = "session_speakers",
+            joinColumns = @JoinColumn(name = "session_id"),
+            inverseJoinColumns = @JoinColumn(name = "speaker_id")
+    )
     private List<Speaker> speakers;
+
+    @OneToMany(mappedBy = "session")
     private List<Question> questions;
 }

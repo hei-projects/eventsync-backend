@@ -1,18 +1,30 @@
 package com.example.eventsync_backend.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import java.time.Instant;
+import jakarta.persistence.*;
+import lombok.*;
 
-@Data
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "questions")
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
+
 public class Question {
-    private Integer id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(length = 5000)
     private String content;
     private String authorName;
     private Integer upvotes;
-    private Integer sessionId;
-    private Instant createdAt;
+    private LocalDateTime createdAt;
+
+    @ManyToOne
+    @JoinColumn(name = "session_id")
+    private Session session;
 }

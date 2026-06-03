@@ -2,42 +2,45 @@ package com.example.eventsync_backend.controller;
 
 import com.example.eventsync_backend.entity.Room;
 import com.example.eventsync_backend.service.RoomService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/rooms")
-@RequiredArgsConstructor
+@RequestMapping("/rooms")
 public class RoomController {
+
     private final RoomService roomService;
 
+    public RoomController(RoomService roomService) {
+        this.roomService = roomService;
+    }
+
     @GetMapping
-    public ResponseEntity<List<Room>> getAll() {
-        return ResponseEntity.ok(roomService.findAll());
+    public List<Room> getAllRooms() {
+        return roomService.getAllRooms();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Room> getById(@PathVariable Integer id) {
-        return ResponseEntity.ok(roomService.getById(id));
+    public Room getRoomById(@PathVariable Long id) {
+        return roomService.getRoomById(id)
+                .orElseThrow(() -> new RuntimeException("Room not found"));
     }
 
     @PostMapping
-    public ResponseEntity<Room> create(@RequestBody Room room) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(roomService.create(room));
+    public Room createRoom(@RequestBody Room room) {
+        return roomService.createRoom(room);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Room> update(@PathVariable Integer id, @RequestBody Room room) {
-        return ResponseEntity.ok(roomService.update(id, room));
+    public Room updateRoom(@PathVariable Long id,
+                           @RequestBody Room room) {
+
+        return roomService.updateRoom(id, room);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Integer id) {
-        roomService.delete(id);
-        return ResponseEntity.noContent().build();
+    public void deleteRoom(@PathVariable Long id) {
+        roomService.deleteRoom(id);
     }
 }

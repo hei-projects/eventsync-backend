@@ -3,6 +3,8 @@ package com.example.eventsync_backend.controller;
 import com.example.eventsync_backend.entity.Event;
 import com.example.eventsync_backend.service.EventService;
 import org.springframework.web.bind.annotation.*;
+import com.example.eventsync_backend.dto.EventResponse;
+import com.example.eventsync_backend.mapper.EventMapper;
 
 import java.util.List;
 
@@ -15,8 +17,11 @@ public class EventController {
         this.eventService = eventService;
     }
     @GetMapping
-    public List<Event> getAllEvents() {
-        return eventService.getAllEvents();
+    public List<EventResponse> getAllEvents() {
+        return eventService.getAllEvents()
+                .stream()
+                .map(EventMapper::toResponse)
+                .toList();
     }
 
     @GetMapping("/{id}")

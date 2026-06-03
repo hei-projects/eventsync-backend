@@ -1,6 +1,8 @@
 package com.example.eventsync_backend.controller;
 
+import com.example.eventsync_backend.dto.SessionResponse;
 import com.example.eventsync_backend.entity.Session;
+import com.example.eventsync_backend.mapper.SessionMapper;
 import com.example.eventsync_backend.service.SessionService;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,8 +19,12 @@ public class SessionController {
     }
 
     @GetMapping
-    public List<Session> getAllSessions() {
-        return sessionService.getAllSessions();
+    public List<SessionResponse> getAllSessions() {
+
+        return sessionService.getAllSessions()
+                .stream()
+                .map(SessionMapper::toResponse)
+                .toList();
     }
 
     @GetMapping("/{id}")

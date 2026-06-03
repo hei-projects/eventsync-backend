@@ -1,6 +1,7 @@
 package com.example.eventsync_backend.service;
 
 import com.example.eventsync_backend.entity.Event;
+import com.example.eventsync_backend.exception.ResourceNotFoundException;
 import com.example.eventsync_backend.repository.EventRepository;
 import org.springframework.stereotype.Service;
 
@@ -35,7 +36,8 @@ public class EventService {
                     event.setLocation(newEvent.getLocation());
                     return eventRepository.save(event);
                 })
-                .orElseThrow(() -> new RuntimeException("Event not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Event not found"));
     }
     public void deleteEvent(Long id) {
         eventRepository.deleteById(id);

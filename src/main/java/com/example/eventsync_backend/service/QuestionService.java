@@ -2,6 +2,7 @@ package com.example.eventsync_backend.service;
 
 import com.example.eventsync_backend.entity.Question;
 import com.example.eventsync_backend.entity.Session;
+import com.example.eventsync_backend.exception.BadRequestException;
 import com.example.eventsync_backend.repository.QuestionRepository;
 import com.example.eventsync_backend.repository.SessionRepository;
 import org.springframework.stereotype.Service;
@@ -39,7 +40,7 @@ public class QuestionService {
                         new RuntimeException("Session not found"));
 
         if (!sessionService.isSessionLive(session)) {
-            throw new RuntimeException(
+            throw new BadRequestException(
                     "Questions are allowed only during live session"
             );
         }

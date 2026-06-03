@@ -1,53 +1,46 @@
 package com.example.eventsync_backend.service;
 
 import com.example.eventsync_backend.entity.Room;
-import com.example.eventsync_backend.exception.BadRequestException;
-import com.example.eventsync_backend.exception.NotFoundException;
 import com.example.eventsync_backend.repository.RoomRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class RoomService {
+
     private final RoomRepository roomRepository;
 
-    public List<Room> findAll() {
+    public RoomService(RoomRepository roomRepository) {
+        this.roomRepository = roomRepository;
+    }
+
+    public List<Room> getAllRooms() {
         return roomRepository.findAll();
     }
 
-    public Room getById(Integer id) {
+    public Optional<Room> getRoomById(Long id) {
+        return roomRepository.findById(id);
+    }
+
+    public Room createRoom(Room room) {
+        return roomRepository.save(room);
+    }
+
+    public Room updateRoom(Long id, Room newRoom) {
+
         return roomRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Room not found with id=" + id));
+                .map(room -> {
+
+                    room.setName(newRoom.getName());
+
+                    return roomRepository.save(room);
+                })
+                .orElseThrow(() -> new RuntimeException("Room not found"));
     }
 
-    @Transactional
-    public Room create(Room room) {
-        validateRoom(room);
-        return roomRepository.save(room);
-    }
-
-    @Transactional
-    public Room update(Integer id, Room room) {
-        getById(id);
-        validateRoom(room);
-        room.setId(id);
-        return roomRepository.save(room);
-    }
-
-    @Transactional
-    public void delete(Integer id) {
-        getById(id);
+    public void deleteRoom(Long id) {
         roomRepository.deleteById(id);
-    }
-
-    private void validateRoom(Room room) {
-        if (!StringUtils.hasText(room.getName())) {
-            throw new BadRequestException("Room name is required");
-        }
     }
 }

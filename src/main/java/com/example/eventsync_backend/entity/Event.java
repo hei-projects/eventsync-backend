@@ -1,20 +1,31 @@
 package com.example.eventsync_backend.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import java.time.Instant;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
+@Entity
+@Table(name = "events")
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
+
 public class Event {
-    private Integer id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String title;
+
+    @Column(length = 5000)
     private String description;
-    private Instant startDate;
-    private Instant endDate;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
     private String location;
+
+    @OneToMany(mappedBy = "event")
     private List<Session> sessions;
 }

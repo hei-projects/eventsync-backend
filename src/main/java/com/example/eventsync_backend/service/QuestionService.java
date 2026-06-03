@@ -1,64 +1,65 @@
 package com.example.eventsync_backend.service;
 
-import com.example.eventsync_backend.dto.QuestionRequest;
 import com.example.eventsync_backend.entity.Question;
 import com.example.eventsync_backend.entity.Session;
 import com.example.eventsync_backend.exception.BadRequestException;
-import com.example.eventsync_backend.exception.NotFoundException;
 import com.example.eventsync_backend.repository.QuestionRepository;
 import com.example.eventsync_backend.repository.SessionRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class QuestionService {
+
     private final QuestionRepository questionRepository;
     private final SessionRepository sessionRepository;
+    private final SessionService sessionService;
 
-    @Transactional
-    public Question askQuestion(Integer sessionId, QuestionRequest request) {
-        if (!StringUtils.hasText(request.getContent())) {
-            throw new BadRequestException("Question content is required");
-        }
+    public QuestionService(
+            QuestionRepository questionRepository,
+            SessionRepository sessionRepository,
+            SessionService sessionService
+    ) {
+        this.questionRepository = questionRepository;
+        this.sessionRepository = sessionRepository;
+        this.sessionService = sessionService;
+    }
+
+    public List<Question> getQuestionsBySession(Long sessionId) {
+
+        return questionRepository
+                .findBySessionIdOrderByUpvotesDesc(sessionId);
+    }
+
+    public Question createQuestion(Long sessionId, Question question) {
 
         Session session = sessionRepository.findById(sessionId)
-                .orElseThrow(() -> new NotFoundException("Session not found with id=" + sessionId));
+                .orElseThrow(() ->
+                        new RuntimeException("Session not found"));
 
-        Instant now = Instant.now();
-        if (now.isBefore(session.getStartTime()) || now.isAfter(session.getEndTime())) {
-            throw new BadRequestException("Cannot ask question: session is not live");
+        if (!sessionService.isSessionLive(session)) {
+            throw new BadRequestException(
+                    "Questions are allowed only during live session"
+            );
         }
 
-        Question question = new Question();
-        question.setContent(request.getContent());
-        question.setAuthorName(request.getAuthorName());
+        question.setSession(session);
+        question.setCreatedAt(LocalDateTime.now());
         question.setUpvotes(0);
-        question.setSessionId(sessionId);
-        question.setCreatedAt(now);
+
         return questionRepository.save(question);
     }
 
-    @Transactional
-    public void upvoteQuestion(Integer questionId) {
-        if (questionRepository.findById(questionId).isEmpty()) {
-            throw new NotFoundException("Question not found with id=" + questionId);
-        }
-        questionRepository.incrementUpvotes(questionId);
-    }
+    public Question upvoteQuestion(Long questionId) {
 
-    public List<Question> getQuestionsForSession(Integer sessionId) {
-        Session session = sessionRepository.findById(sessionId)
-                .orElseThrow(() -> new NotFoundException("Session not found with id=" + sessionId));
-        Instant now = Instant.now();
-        if (now.isBefore(session.getStartTime()) || now.isAfter(session.getEndTime())) {
-            throw new BadRequestException("Questions are only visible during live session");
-        }
-        return questionRepository.findBySessionIdOrderByUpvotesDesc(sessionId);
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow(() ->
+                        new RuntimeException("Question not found"));
+
+        question.setUpvotes(question.getUpvotes() + 1);
+
+        return questionRepository.save(question);
     }
 }

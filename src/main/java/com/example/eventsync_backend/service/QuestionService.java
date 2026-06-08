@@ -1,8 +1,10 @@
 package com.example.eventsync_backend.service;
 
+import com.example.eventsync_backend.dto.CreateQuestionRequest;
 import com.example.eventsync_backend.entity.Question;
 import com.example.eventsync_backend.entity.Session;
 import com.example.eventsync_backend.exception.BadRequestException;
+import com.example.eventsync_backend.exception.ResourceNotFoundException;
 import com.example.eventsync_backend.repository.QuestionRepository;
 import com.example.eventsync_backend.repository.SessionRepository;
 import org.springframework.stereotype.Service;
@@ -28,16 +30,20 @@ public class QuestionService {
     }
 
     public List<Question> getQuestionsBySession(Long sessionId) {
+        Session session = sessionRepository.findById(sessionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Session not found with id: " + sessionId));
+
+        if (LocalDateTime.now().isBefore(session.getStartTime())) {
+            return List.of();
+        }
 
         return questionRepository
                 .findBySessionIdOrderByUpvotesDesc(sessionId);
     }
 
-    public Question createQuestion(Long sessionId, Question question) {
-
+    public Question createQuestion(Long sessionId, CreateQuestionRequest request) {
         Session session = sessionRepository.findById(sessionId)
-                .orElseThrow(() ->
-                        new RuntimeException("Session not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Session not found with id: " + sessionId));
 
         if (!sessionService.isSessionLive(session)) {
             throw new BadRequestException(
@@ -45,18 +51,20 @@ public class QuestionService {
             );
         }
 
-        question.setSession(session);
-        question.setCreatedAt(LocalDateTime.now());
-        question.setUpvotes(0);
+        Question question = Question.builder()
+                .content(request.getContent())
+                .authorName(request.getAuthorName())
+                .session(session)
+                .createdAt(LocalDateTime.now())
+                .upvotes(0)
+                .build();
 
         return questionRepository.save(question);
     }
 
     public Question upvoteQuestion(Long questionId) {
-
         Question question = questionRepository.findById(questionId)
-                .orElseThrow(() ->
-                        new RuntimeException("Question not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Question not found with id: " + questionId));
 
         question.setUpvotes(question.getUpvotes() + 1);
 

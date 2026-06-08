@@ -1,6 +1,7 @@
 package com.example.eventsync_backend.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -12,16 +13,19 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-
 public class Question {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Content is required")
     @Column(length = 5000)
     private String content;
+
     private String authorName;
+
     private Integer upvotes;
+
     private LocalDateTime createdAt;
 
     @ManyToOne

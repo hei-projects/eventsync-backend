@@ -1,6 +1,7 @@
 package com.example.eventsync_backend.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.util.List;
@@ -17,11 +18,14 @@ public class Speaker {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Full name is required")
     private String fullName;
+
     private String profilePicture;
 
     @Column(length = 5000)
     private String biography;
+
     private String website;
     private String linkedin;
     private String github;

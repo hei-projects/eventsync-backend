@@ -1,11 +1,14 @@
+
+
 package com.example.eventsync_backend.service;
 
+import com.example.eventsync_backend.dto.CreateRoomRequest;
 import com.example.eventsync_backend.entity.Room;
+import com.example.eventsync_backend.exception.ResourceNotFoundException;
 import com.example.eventsync_backend.repository.RoomRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class RoomService {
@@ -20,27 +23,32 @@ public class RoomService {
         return roomRepository.findAll();
     }
 
-    public Optional<Room> getRoomById(Long id) {
-        return roomRepository.findById(id);
+    public Room getRoomById(Long id) {
+        return roomRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Room not found with id: " + id));
     }
 
-    public Room createRoom(Room room) {
+    public Room createRoom(CreateRoomRequest request) {
+        Room room = Room.builder()
+                .name(request.getName())
+                .build();
         return roomRepository.save(room);
     }
 
-    public Room updateRoom(Long id, Room newRoom) {
-
+    public Room updateRoom(Long id, CreateRoomRequest request) {
         return roomRepository.findById(id)
                 .map(room -> {
-
-                    room.setName(newRoom.getName());
-
+                    room.setName(request.getName());
                     return roomRepository.save(room);
                 })
-                .orElseThrow(() -> new RuntimeException("Room not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Room not found with id: " + id));
     }
 
     public void deleteRoom(Long id) {
+        if (!roomRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Room not found with id: " + id);
+        }
         roomRepository.deleteById(id);
     }
 }
+

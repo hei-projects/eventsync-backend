@@ -1,12 +1,12 @@
 package com.example.eventsync_backend.service;
 
+import com.example.eventsync_backend.dto.CreateEventRequest;
 import com.example.eventsync_backend.entity.Event;
 import com.example.eventsync_backend.exception.ResourceNotFoundException;
 import com.example.eventsync_backend.repository.EventRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class EventService {
@@ -16,30 +16,44 @@ public class EventService {
     public EventService(EventRepository eventRepository) {
         this.eventRepository = eventRepository;
     }
+
     public List<Event> getAllEvents() {
         return eventRepository.findAll();
     }
-    public Optional<Event> getEventById(Long id) {
-        return eventRepository.findById(id);
+
+    public Event getEventById(Long id) {
+        return eventRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Event not found with id: " + id));
     }
 
-    public Event createEvent(Event event) {
+    public Event createEvent(CreateEventRequest request) {
+        Event event = Event.builder()
+                .title(request.getTitle())
+                .description(request.getDescription())
+                .startDate(request.getStartDate())
+                .endDate(request.getEndDate())
+                .location(request.getLocation())
+                .build();
         return eventRepository.save(event);
     }
-    public Event updateEvent(Long id, Event newEvent) {
+
+    public Event updateEvent(Long id, CreateEventRequest request) {
         return eventRepository.findById(id)
                 .map(event -> {
-                    event.setTitle(newEvent.getTitle());
-                    event.setDescription(newEvent.getDescription());
-                    event.setStartDate(newEvent.getStartDate());
-                    event.setEndDate(newEvent.getEndDate());
-                    event.setLocation(newEvent.getLocation());
+                    event.setTitle(request.getTitle());
+                    event.setDescription(request.getDescription());
+                    event.setStartDate(request.getStartDate());
+                    event.setEndDate(request.getEndDate());
+                    event.setLocation(request.getLocation());
                     return eventRepository.save(event);
                 })
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Event not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Event not found with id: " + id));
     }
+
     public void deleteEvent(Long id) {
+        if (!eventRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Event not found with id: " + id);
+        }
         eventRepository.deleteById(id);
     }
 }

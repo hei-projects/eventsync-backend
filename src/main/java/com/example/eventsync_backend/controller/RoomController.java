@@ -1,7 +1,15 @@
+
+
 package com.example.eventsync_backend.controller;
 
-import com.example.eventsync_backend.entity.Room;
+import com.example.eventsync_backend.dto.CreateRoomRequest;
+import com.example.eventsync_backend.dto.RoomResponse;
+import com.example.eventsync_backend.dto.SessionResponse;
+import com.example.eventsync_backend.mapper.RoomMapper;
+import com.example.eventsync_backend.mapper.SessionMapper;
 import com.example.eventsync_backend.service.RoomService;
+import com.example.eventsync_backend.service.SessionService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,36 +19,48 @@ import java.util.List;
 public class RoomController {
 
     private final RoomService roomService;
+    private final SessionService sessionService;
 
-    public RoomController(RoomService roomService) {
+    public RoomController(RoomService roomService, SessionService sessionService) {
         this.roomService = roomService;
+        this.sessionService = sessionService;
     }
 
     @GetMapping
-    public List<Room> getAllRooms() {
-        return roomService.getAllRooms();
+    public List<RoomResponse> getAllRooms() {
+        return roomService.getAllRooms()
+                .stream()
+                .map(RoomMapper::toResponse)
+                .toList();
     }
 
     @GetMapping("/{id}")
-    public Room getRoomById(@PathVariable Long id) {
-        return roomService.getRoomById(id)
-                .orElseThrow(() -> new RuntimeException("Room not found"));
+    public RoomResponse getRoomById(@PathVariable Long id) {
+        return RoomMapper.toResponse(roomService.getRoomById(id));
     }
 
     @PostMapping
-    public Room createRoom(@RequestBody Room room) {
-        return roomService.createRoom(room);
+    public RoomResponse createRoom(@Valid @RequestBody CreateRoomRequest request) {
+        return RoomMapper.toResponse(roomService.createRoom(request));
     }
 
     @PutMapping("/{id}")
-    public Room updateRoom(@PathVariable Long id,
-                           @RequestBody Room room) {
-
-        return roomService.updateRoom(id, room);
+    public RoomResponse updateRoom(@PathVariable Long id,
+                                   @Valid @RequestBody CreateRoomRequest request) {
+        return RoomMapper.toResponse(roomService.updateRoom(id, request));
     }
 
     @DeleteMapping("/{id}")
     public void deleteRoom(@PathVariable Long id) {
         roomService.deleteRoom(id);
     }
+
+    @GetMapping("/{roomId}/sessions")
+    public List<SessionResponse> getSessionsByRoom(@PathVariable Long roomId) {
+        return sessionService.getSessionsByRoom(roomId)
+                .stream()
+                .map(SessionMapper::toResponse)
+                .toList();
+    }
 }
+

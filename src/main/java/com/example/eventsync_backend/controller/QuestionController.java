@@ -1,7 +1,12 @@
+
+
 package com.example.eventsync_backend.controller;
 
-import com.example.eventsync_backend.entity.Question;
+import com.example.eventsync_backend.dto.CreateQuestionRequest;
+import com.example.eventsync_backend.dto.QuestionResponse;
+import com.example.eventsync_backend.mapper.QuestionMapper;
 import com.example.eventsync_backend.service.QuestionService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,24 +21,33 @@ public class QuestionController {
     }
 
     @GetMapping("/sessions/{sessionId}/questions")
-    public List<Question> getQuestionsBySession(
+    public List<QuestionResponse> getQuestionsBySession(
             @PathVariable Long sessionId
     ) {
-        return questionService.getQuestionsBySession(sessionId);
+        return questionService.getQuestionsBySession(sessionId)
+                .stream()
+                .map(QuestionMapper::toResponse)
+                .toList();
     }
 
     @PostMapping("/sessions/{sessionId}/questions")
-    public Question createQuestion(
+    public QuestionResponse createQuestion(
             @PathVariable Long sessionId,
-            @RequestBody Question question
+            @Valid @RequestBody CreateQuestionRequest request
     ) {
-        return questionService.createQuestion(sessionId, question);
+        return QuestionMapper.toResponse(
+                questionService.createQuestion(sessionId, request)
+        );
     }
 
     @PostMapping("/questions/{questionId}/upvote")
-    public Question upvoteQuestion(
+    public QuestionResponse upvoteQuestion(
             @PathVariable Long questionId
     ) {
-        return questionService.upvoteQuestion(questionId);
+        return QuestionMapper.toResponse(
+                questionService.upvoteQuestion(questionId)
+        );
     }
 }
+
+

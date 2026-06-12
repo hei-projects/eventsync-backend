@@ -1,9 +1,11 @@
+
 package com.example.eventsync_backend.controller;
 
+import com.example.eventsync_backend.dto.CreateSessionRequest;
 import com.example.eventsync_backend.dto.SessionResponse;
-import com.example.eventsync_backend.entity.Session;
 import com.example.eventsync_backend.mapper.SessionMapper;
 import com.example.eventsync_backend.service.SessionService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,7 +22,6 @@ public class SessionController {
 
     @GetMapping
     public List<SessionResponse> getAllSessions() {
-
         return sessionService.getAllSessions()
                 .stream()
                 .map(SessionMapper::toResponse)
@@ -28,21 +29,19 @@ public class SessionController {
     }
 
     @GetMapping("/{id}")
-    public Session getSessionById(@PathVariable Long id) {
-        return sessionService.getSessionById(id)
-                .orElseThrow(() -> new RuntimeException("Session not found"));
+    public SessionResponse getSessionById(@PathVariable Long id) {
+        return SessionMapper.toResponse(sessionService.getSessionById(id));
     }
 
     @PostMapping
-    public Session createSession(@RequestBody Session session) {
-        return sessionService.createSession(session);
+    public SessionResponse createSession(@Valid @RequestBody CreateSessionRequest request) {
+        return SessionMapper.toResponse(sessionService.createSession(request));
     }
 
     @PutMapping("/{id}")
-    public Session updateSession(@PathVariable Long id,
-                                 @RequestBody Session session) {
-
-        return sessionService.updateSession(id, session);
+    public SessionResponse updateSession(@PathVariable Long id,
+                                         @Valid @RequestBody CreateSessionRequest request) {
+        return SessionMapper.toResponse(sessionService.updateSession(id, request));
     }
 
     @DeleteMapping("/{id}")
@@ -52,10 +51,8 @@ public class SessionController {
 
     @GetMapping("/{id}/live")
     public boolean isSessionLive(@PathVariable Long id) {
-
-        Session session = sessionService.getSessionById(id)
-                .orElseThrow(() -> new RuntimeException("Session not found"));
-
-        return sessionService.isSessionLive(session);
+        return sessionService.isSessionLive(sessionService.getSessionById(id));
     }
 }
+
+

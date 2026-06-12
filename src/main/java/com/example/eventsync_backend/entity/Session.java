@@ -1,6 +1,8 @@
 package com.example.eventsync_backend.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -18,15 +20,21 @@ public class Session {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Title is required")
     private String title;
 
     @Column(length = 5000)
     private String description;
 
+    @NotNull(message = "Start time is required")
     private LocalDateTime startTime;
+
+    @NotNull(message = "End time is required")
     private LocalDateTime endTime;
+
     private Integer capacity;
 
+    @NotNull(message = "Event is required")
     @ManyToOne
     @JoinColumn(name = "event_id")
     private Event event;

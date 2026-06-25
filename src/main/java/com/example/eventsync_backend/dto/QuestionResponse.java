@@ -20,4 +20,8 @@ public class QuestionResponse {
     private Integer upvotes;
 
     private LocalDateTime createdAt;
+
+    private Boolean isAnswered;
+
+    private Long sessionId;
 }

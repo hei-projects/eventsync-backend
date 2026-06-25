@@ -28,6 +28,8 @@ public class Question {
 
     private LocalDateTime createdAt;
 
+    private Boolean isAnswered;
+
     @ManyToOne
     @JoinColumn(name = "session_id")
     private Session session;

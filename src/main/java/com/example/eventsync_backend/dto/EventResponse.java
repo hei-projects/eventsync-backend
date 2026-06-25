@@ -1,5 +1,6 @@
 package com.example.eventsync_backend.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -22,4 +23,17 @@ public class EventResponse {
     private LocalDateTime endDate;
 
     private String location;
+
+    private String longDescription;
+
+    private String venue;
+
+    private String coverImage;
+
+    private String tags;
+
+    @JsonProperty("isLive")
+    private boolean live;
+
+    private String status;
 }

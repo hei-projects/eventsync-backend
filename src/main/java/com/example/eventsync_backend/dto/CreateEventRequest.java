@@ -24,4 +24,12 @@ public class CreateEventRequest {
     private LocalDateTime endDate;
 
     private String location;
+
+    private String longDescription;
+
+    private String venue;
+
+    private String coverImage;
+
+    private String tags;
 }

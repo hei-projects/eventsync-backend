@@ -33,6 +33,10 @@ public class EventService {
                 .startDate(request.getStartDate())
                 .endDate(request.getEndDate())
                 .location(request.getLocation())
+                .longDescription(request.getLongDescription())
+                .venue(request.getVenue())
+                .coverImage(request.getCoverImage())
+                .tags(request.getTags())
                 .build();
         return eventRepository.save(event);
     }
@@ -45,6 +49,10 @@ public class EventService {
                     event.setStartDate(request.getStartDate());
                     event.setEndDate(request.getEndDate());
                     event.setLocation(request.getLocation());
+                    event.setLongDescription(request.getLongDescription());
+                    event.setVenue(request.getVenue());
+                    event.setCoverImage(request.getCoverImage());
+                    event.setTags(request.getTags());
                     return eventRepository.save(event);
                 })
                 .orElseThrow(() -> new ResourceNotFoundException("Event not found with id: " + id));

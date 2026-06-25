@@ -12,6 +12,8 @@ public class QuestionMapper {
                 .authorName(question.getAuthorName())
                 .upvotes(question.getUpvotes())
                 .createdAt(question.getCreatedAt())
+                .isAnswered(question.getIsAnswered())
+                .sessionId(question.getSession() != null ? question.getSession().getId() : null)
                 .build();
     }
 }

@@ -20,4 +20,12 @@ public class CreateSpeakerRequest {
     private String website;
     private String linkedin;
     private String github;
+
+    private String title;
+
+    private String company;
+
+    private String twitter;
+
+    private String tags;
 }

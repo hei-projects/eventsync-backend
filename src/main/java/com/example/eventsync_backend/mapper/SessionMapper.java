@@ -23,6 +23,12 @@ public class SessionMapper {
                         .toList()
                 : Collections.emptyList();
 
+        List<Long> speakerIds = session.getSpeakers() != null
+                ? session.getSpeakers().stream()
+                        .map(Speaker::getId)
+                        .toList()
+                : Collections.emptyList();
+
         return SessionResponse.builder()
                 .id(session.getId())
                 .title(session.getTitle())
@@ -34,7 +40,12 @@ public class SessionMapper {
                 .roomName(session.getRoom() != null ? session.getRoom().getName() : null)
                 .roomId(session.getRoom() != null ? session.getRoom().getId() : null)
                 .speakerNames(speakerNames)
+                .speakerIds(speakerIds)
                 .live(live)
+                .track(session.getTrack())
+                .level(session.getLevel())
+                .tags(session.getTags())
+                .enrolled(session.getEnrolled())
                 .build();
     }
 }

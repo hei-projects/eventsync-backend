@@ -33,4 +33,10 @@ public class CreateSessionRequest {
 
     @NotNull(message = "At least one speaker is required")
     private List<Long> speakerIds;
+
+    private String track;
+
+    private String level;
+
+    private String tags;
 }

@@ -30,6 +30,15 @@ public class Speaker {
     private String linkedin;
     private String github;
 
+    private String title;
+
+    private String company;
+
+    private String twitter;
+
+    @Column(length = 1000)
+    private String tags;
+
     @ManyToMany(mappedBy = "speakers")
     private List<Session> sessions;
 }

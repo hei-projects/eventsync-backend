@@ -14,6 +14,10 @@ public class SpeakerMapper {
                 .website(speaker.getWebsite())
                 .linkedin(speaker.getLinkedin())
                 .github(speaker.getGithub())
+                .title(speaker.getTitle())
+                .company(speaker.getCompany())
+                .twitter(speaker.getTwitter())
+                .tags(speaker.getTags())
                 .build();
     }
 }

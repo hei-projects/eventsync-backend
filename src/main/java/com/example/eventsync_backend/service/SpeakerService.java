@@ -35,6 +35,10 @@ public class SpeakerService {
                 .website(request.getWebsite())
                 .linkedin(request.getLinkedin())
                 .github(request.getGithub())
+                .title(request.getTitle())
+                .company(request.getCompany())
+                .twitter(request.getTwitter())
+                .tags(request.getTags())
                 .build();
         return speakerRepository.save(speaker);
     }
@@ -48,6 +52,10 @@ public class SpeakerService {
                     speaker.setWebsite(request.getWebsite());
                     speaker.setLinkedin(request.getLinkedin());
                     speaker.setGithub(request.getGithub());
+                    speaker.setTitle(request.getTitle());
+                    speaker.setCompany(request.getCompany());
+                    speaker.setTwitter(request.getTwitter());
+                    speaker.setTags(request.getTags());
                     return speakerRepository.save(speaker);
                 })
                 .orElseThrow(() -> new ResourceNotFoundException("Speaker not found with id: " + id));

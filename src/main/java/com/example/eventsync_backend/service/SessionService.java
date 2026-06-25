@@ -70,6 +70,9 @@ public class SessionService {
                 .event(event)
                 .room(room)
                 .speakers(speakers)
+                .track(request.getTrack())
+                .level(request.getLevel())
+                .tags(request.getTags())
                 .build();
 
         return sessionRepository.save(session);
@@ -106,6 +109,9 @@ public class SessionService {
                     session.setEvent(event);
                     session.setRoom(room);
                     session.setSpeakers(speakers);
+                    session.setTrack(request.getTrack());
+                    session.setLevel(request.getLevel());
+                    session.setTags(request.getTags());
                     return sessionRepository.save(session);
                 })
                 .orElseThrow(() -> new ResourceNotFoundException("Session not found with id: " + id));

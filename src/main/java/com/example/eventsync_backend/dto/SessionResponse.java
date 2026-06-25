@@ -32,5 +32,15 @@ public class SessionResponse {
 
     private List<String> speakerNames;
 
+    private List<Long> speakerIds;
+
     private boolean live;
+
+    private String track;
+
+    private String level;
+
+    private String tags;
+
+    private Integer enrolled;
 }

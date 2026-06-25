@@ -53,4 +53,14 @@ public class Session {
 
     @OneToMany(mappedBy = "session")
     private List<Question> questions;
+
+    private String track;
+
+    @Column(length = 50)
+    private String level;
+
+    @Column(length = 1000)
+    private String tags;
+
+    private Integer enrolled;
 }

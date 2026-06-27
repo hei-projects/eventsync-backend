@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class QuestionService {
@@ -18,6 +20,9 @@ public class QuestionService {
     private final QuestionRepository questionRepository;
     private final SessionRepository sessionRepository;
     private final SessionService sessionService;
+
+    private final Map<Long, Long> upvoteCooldowns = new ConcurrentHashMap<>();
+    private static final long COOLDOWN_MS = 30_000;
 
     public QuestionService(
             QuestionRepository questionRepository,
@@ -63,11 +68,19 @@ public class QuestionService {
     }
 
     public Question upvoteQuestion(Long questionId) {
+        long now = System.currentTimeMillis();
+        Long last = upvoteCooldowns.get(questionId);
+        if (last != null && (now - last) < COOLDOWN_MS) {
+            throw new BadRequestException("Veuillez patienter avant de revoter");
+        }
+
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Question not found with id: " + questionId));
 
         question.setUpvotes(question.getUpvotes() + 1);
+        Question saved = questionRepository.save(question);
 
-        return questionRepository.save(question);
+        upvoteCooldowns.put(questionId, now);
+        return saved;
     }
 }

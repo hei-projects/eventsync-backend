@@ -32,7 +32,7 @@ public class AuthFilter implements Filter {
         String method = req.getMethod();
         String path = req.getRequestURI();
 
-        if ("GET".equalsIgnoreCase(method) || path.startsWith("/auth/")) {
+        if ("GET".equalsIgnoreCase(method) || "OPTIONS".equalsIgnoreCase(method) || path.startsWith("/auth/")) {
             chain.doFilter(request, response);
             return;
         }

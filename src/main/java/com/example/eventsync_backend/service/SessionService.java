@@ -144,4 +144,9 @@ public class SessionService {
     public List<Session> getSessionsByRoom(Long roomId) {
         return sessionRepository.findByRoomIdOrderByStartTimeAsc(roomId);
     }
+
+    public List<Speaker> getSpeakersBySession(Long sessionId) {
+        Session session = getSessionById(sessionId);
+        return session.getSpeakers();
+    }
 }

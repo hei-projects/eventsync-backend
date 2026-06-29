@@ -3,12 +3,15 @@ package com.example.eventsync_backend.controller;
 
 import com.example.eventsync_backend.dto.CreateSessionRequest;
 import com.example.eventsync_backend.dto.SessionResponse;
+import com.example.eventsync_backend.dto.SpeakerResponse;
 import com.example.eventsync_backend.mapper.SessionMapper;
+import com.example.eventsync_backend.mapper.SpeakerMapper;
 import com.example.eventsync_backend.service.SessionService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/sessions")
@@ -45,13 +48,22 @@ public class SessionController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteSession(@PathVariable Long id) {
+    public Map<String, Long> deleteSession(@PathVariable Long id) {
         sessionService.deleteSession(id);
+        return Map.of("id", id);
     }
 
     @GetMapping("/{id}/live")
     public boolean isSessionLive(@PathVariable Long id) {
         return sessionService.isSessionLive(sessionService.getSessionById(id));
+    }
+
+    @GetMapping("/{id}/speakers")
+    public List<SpeakerResponse> getSessionSpeakers(@PathVariable Long id) {
+        return sessionService.getSpeakersBySession(id)
+                .stream()
+                .map(SpeakerMapper::toResponse)
+                .toList();
     }
 }
 

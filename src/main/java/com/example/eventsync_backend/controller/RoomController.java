@@ -13,6 +13,7 @@ import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/rooms")
@@ -51,8 +52,9 @@ public class RoomController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteRoom(@PathVariable Long id) {
+    public Map<String, Long> deleteRoom(@PathVariable Long id) {
         roomService.deleteRoom(id);
+        return Map.of("id", id);
     }
 
     @GetMapping("/{roomId}/sessions")

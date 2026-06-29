@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/events")
@@ -48,8 +49,9 @@ public class EventController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteEvent(@PathVariable Long id) {
+    public Map<String, Long> deleteEvent(@PathVariable Long id) {
         eventService.deleteEvent(id);
+        return Map.of("id", id);
     }
 
     @GetMapping("/{eventId}/schedule")

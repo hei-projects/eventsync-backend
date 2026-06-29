@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/speakers")
@@ -47,8 +48,9 @@ public class SpeakerController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteSpeaker(@PathVariable Long id) {
+    public Map<String, Long> deleteSpeaker(@PathVariable Long id) {
         speakerService.deleteSpeaker(id);
+        return Map.of("id", id);
     }
 }
 
